@@ -59,12 +59,15 @@ class Task(models.Model):
     group = models.ForeignKey('Group', on_delete=models.CASCADE)
     users = models.ManyToManyField(User)
 
+
 class Priority(models.Model):
     name = models.CharField(max_length=100)
+
 
 class List(models.Model):
     name = models.CharField(max_length=100)
     user = models.ForeignKey('User', on_delete=models.CASCADE)
+
 
 class Group(models.Model):
     name = models.CharField(max_length=100)
