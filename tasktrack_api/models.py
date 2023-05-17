@@ -1,3 +1,4 @@
+from typing import Any
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
@@ -55,13 +56,18 @@ class Task(models.Model):
     done_date = models.DateTimeField(null=True, blank=True)
     done = models.BooleanField(default=False)
     priority = models.ForeignKey('Priority', on_delete=models.CASCADE)
-    lista = models.ForeignKey('List', on_delete=models.CASCADE)
-    group = models.ForeignKey('Group', on_delete=models.CASCADE)
+    list = models.ForeignKey(
+        'List', on_delete=models.CASCADE, null=True)
+    group = models.ForeignKey(
+        'Group', on_delete=models.CASCADE, null=True)
     users = models.ManyToManyField(User)
 
 
 class Priority(models.Model):
     name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 
 class List(models.Model):
@@ -71,4 +77,4 @@ class List(models.Model):
 
 class Group(models.Model):
     name = models.CharField(max_length=100)
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    users = models.ManyToManyField(User)

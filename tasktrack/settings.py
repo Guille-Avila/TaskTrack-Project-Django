@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'tasktrack_api',
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # import corsheaders
+    "corsheaders.middleware.CorsMiddleware",
+]
+
+# available request links cors
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',  # react port
 ]
 
 ROOT_URLCONF = "tasktrack.urls"
@@ -132,3 +140,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Set user to access with email
 AUTH_USER_MODEL = 'tasktrack_api.User'
+
+
+# config rest framework
+REST_FRAMEWORK = {
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.TokenAuthentication',
+    # ],
+}
