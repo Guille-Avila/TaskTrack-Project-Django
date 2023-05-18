@@ -1,12 +1,12 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import LoginView, RegisterView, TaskViewSet, LogoutView
+from .views import LoginView, RegisterView, TaskViewSet, LogoutView, GroupViewSet, ListViewSet
 from rest_framework.authtoken.views import obtain_auth_token
 
 router = DefaultRouter()
 router.register('tasks', TaskViewSet)
-router.register('groups', TaskViewSet)
-router.register('lists', TaskViewSet)
+router.register('groups', GroupViewSet)
+router.register('lists', ListViewSet)
 
 urlpatterns = [
     # Otras URL de tu aplicación

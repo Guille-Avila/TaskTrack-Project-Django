@@ -53,13 +53,13 @@ class TaskViewSet(viewsets.ModelViewSet):
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
-    serializer_class = TaskSerializer
+    serializer_class = GroupSerializer
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
-        groups = user.groups_set.all()
+        groups = user.group_set.all()
         return groups
 
     def perform_create(self, serializer):
@@ -75,7 +75,7 @@ class ListViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        lists = user.lists_set.all()
+        lists = user.list_set.all()
         return lists
 
     def perform_create(self, serializer):
