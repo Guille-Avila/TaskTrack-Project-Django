@@ -50,12 +50,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Task(models.Model):
     title = models.CharField(max_length=100)
-    description = models.TextField()
-    due_date = models.DateField()
+    description = models.TextField(null=True)
+    due_date = models.DateField(null=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     done_date = models.DateTimeField(null=True, blank=True)
     done = models.BooleanField(default=False)
-    priority = models.ForeignKey('Priority', on_delete=models.CASCADE)
+    priority = models.ForeignKey(
+        'Priority', on_delete=models.CASCADE, default=1)
     list = models.ForeignKey(
         'List', on_delete=models.CASCADE, null=True)
     group = models.ForeignKey(

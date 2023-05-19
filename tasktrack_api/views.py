@@ -42,7 +42,14 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        done_param = self.request.query_params.get('done', None)
         tasks = user.task_set.all()
+
+        if done_param is not None:
+            if done_param.lower() == 'true':
+                tasks = tasks.filter(done=True)
+            elif done_param.lower() == 'false':
+                tasks = tasks.filter(done=False)
         return tasks
 
     # save user and task in the intermediate table n.n

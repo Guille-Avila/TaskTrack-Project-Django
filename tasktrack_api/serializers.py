@@ -47,12 +47,15 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ('id', 'title', 'description',
-                  'due_date', 'priority', 'group', 'list')
-        
+                  'due_date', 'priority', 'group',
+                  'list', 'done', 'done_date', 'creation_date')
+
+
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ('id', 'name')
+
 
 class ListSerializer(serializers.ModelSerializer):
     class Meta:
