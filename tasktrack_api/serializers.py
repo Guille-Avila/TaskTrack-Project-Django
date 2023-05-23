@@ -40,7 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'password', 'password_confirm')
+        fields = ('id', 'email', 'username','password', 'password_confirm')
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -61,3 +61,9 @@ class ListSerializer(serializers.ModelSerializer):
     class Meta:
         model = List
         fields = ('id', 'name')
+
+
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group.users.through
+        fields = ('id', 'group_id', 'user_id')
