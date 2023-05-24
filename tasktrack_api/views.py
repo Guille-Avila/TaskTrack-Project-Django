@@ -7,9 +7,20 @@ from rest_framework.views import APIView
 from .serializers import LoginSerializer, UserSerializer, TaskSerializer, GroupSerializer, ListSerializer, MemberSerializer
 from django.contrib.auth import get_user_model
 from .models import Task, Group, List
-from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.decorators import api_view
 
 User = get_user_model()
+
+
+@api_view(['GET'])
+def get_current_user(request):
+    user = request.user
+
+    if user.is_authenticated:
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    else:
+        return Response({'error': 'User not authenticated'})
 
 
 class LoginView(APIView):
@@ -124,9 +135,11 @@ class MemberViewSet(viewsets.ModelViewSet):
 
         if user:
             group.users.add(user)
-            return Response({'message': 'New member {} added to group {}'.format(user.username, group.name)}, status=status.HTTP_201_CREATED)
+            return Response({'message': 'New member {} added to group {}'.format(user.username, group.name)},
+                            status=status.HTTP_201_CREATED)
         else:
-            return Response({'message': 'Failed to add new member'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Failed to add new member'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         group_id = self.kwargs.get('id')
@@ -157,10 +170,10 @@ class MemberViewSet(viewsets.ModelViewSet):
             user = get_object_or_404(User, email=email)
             new_user_id = user.id
 
-
         group = get_object_or_404(Group, id=group_id)
         try:
-            member = group.users.through.objects.get(group_id=group_id, user_id=user_id)
+            member = group.users.through.objects.get(
+                group_id=group_id, user_id=user_id)
             print(member)
         except group.users.through.DoesNotExist:
             return Response({'message': 'Failed to get member'}, status=status.HTTP_400_BAD_REQUEST)
@@ -168,6 +181,7 @@ class MemberViewSet(viewsets.ModelViewSet):
         if member:
             member.user_id = new_user_id
             member.save()
-            return Response({'message': 'Edit member {} in group {}'.format(member.user_id, member.group_id)}, status=status.HTTP_200_OK)
+            return Response({'message': 'Edit member {} in group {}'.format(member.user_id, member.group_id)},
+                            status=status.HTTP_200_OK)
         else:
             return Response({'message': 'Failed to update member'}, status=status.HTTP_400_BAD_REQUEST)

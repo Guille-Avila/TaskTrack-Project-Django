@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import LoginView, RegisterView, TaskViewSet, LogoutView, GroupViewSet, ListViewSet, MemberViewSet
+from .views import LoginView, RegisterView, TaskViewSet, LogoutView, GroupViewSet, ListViewSet, MemberViewSet, get_current_user
 from rest_framework.authtoken.views import obtain_auth_token
 
 router = DefaultRouter()
@@ -16,7 +16,8 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('register/', RegisterView.as_view(), name='register'),
     path('members/<int:id>/',
-         MemberViewSet.as_view({'get': 'list','post': 'create', 'delete': 'destroy'}), name='members'),
+         MemberViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='members'),
     path('members/<int:group_id>/<int:user_id>/',
          MemberViewSet.as_view({'put': 'update'}), name='member-update'),
+    path('current-user/', get_current_user, name='current-user'),
 ] + router.urls
