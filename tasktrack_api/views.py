@@ -8,6 +8,7 @@ from .serializers import LoginSerializer, UserSerializer, TaskSerializer, GroupS
 from django.contrib.auth import get_user_model
 from .models import Task, Group, List
 from rest_framework.decorators import api_view
+from django.db.models import Q
 
 User = get_user_model()
 
@@ -47,28 +48,41 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
 
+class IsGroupMember(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        group_id = obj.group_id
+        print(group_id)
+        print(user.group_set.filter(pk=group_id).exists())
+        if group_id is None:
+            return True
+        return user.group_set.filter(pk=group_id).exists()
+
+
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsGroupMember]
 
     def get_queryset(self):
         user = self.request.user
         done_param = self.request.query_params.get('done', None)
         tasks = user.task_set.all()
+        group_tasks = Task.objects.filter(group__users=user)
+
+        tasks = tasks | group_tasks
 
         if done_param is not None:
             if done_param.lower() == 'true':
                 tasks = tasks.filter(done=True)
             elif done_param.lower() == 'false':
                 tasks = tasks.filter(done=False)
-        return tasks
+        return tasks.distinct()
 
-    # save user and task in the intermediate table n.n
     def perform_create(self, serializer):
-        users = [self.request.user]  # create list cause is relation n.n
-        serializer.save(users=users)
+        user = self.request.user
+        serializer.save(user=user)
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -174,7 +188,6 @@ class MemberViewSet(viewsets.ModelViewSet):
         try:
             member = group.users.through.objects.get(
                 group_id=group_id, user_id=user_id)
-            print(member)
         except group.users.through.DoesNotExist:
             return Response({'message': 'Failed to get member'}, status=status.HTTP_400_BAD_REQUEST)
 

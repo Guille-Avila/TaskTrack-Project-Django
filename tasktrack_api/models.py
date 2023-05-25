@@ -37,7 +37,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=20)
     company = models.CharField(max_length=150)
     college = models.CharField(max_length=150)
-
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
@@ -61,7 +60,8 @@ class Task(models.Model):
         'List', on_delete=models.CASCADE, null=True)
     group = models.ForeignKey(
         'Group', on_delete=models.CASCADE, null=True)
-    users = models.ManyToManyField(User)
+    user = models.ForeignKey(
+        'User', on_delete=models.CASCADE, null=True)
 
 
 class Priority(models.Model):
