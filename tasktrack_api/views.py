@@ -109,12 +109,12 @@ class ListViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        lists = user.list_set.all()
+        lists = List.objects.filter(user=user)
         return lists
 
     def perform_create(self, serializer):
-        users = self.request.user  # not array simple relation 1.n
-        serializer.save(users=users)
+        user = self.request.user  # not array simple relation 1.n
+        serializer.save(user=user)
 
 
 class MemberViewSet(viewsets.ModelViewSet):
