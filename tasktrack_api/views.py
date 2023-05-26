@@ -4,11 +4,11 @@ from rest_framework import status, generics, viewsets, permissions, authenticati
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import LoginSerializer, UserSerializer, TaskSerializer, GroupSerializer, ListSerializer, MemberSerializer
+from .serializers import LoginSerializer, UserSerializer, TaskSerializer, GroupSerializer, ListSerializer, MemberSerializer, PersonalUserSerializer, RegisterSerializer, ChangePasswordSerializer
 from django.contrib.auth import get_user_model
 from .models import Task, Group, List
 from rest_framework.decorators import api_view
-from django.db.models import Q
+from django.contrib.auth.hashers import make_password
 
 User = get_user_model()
 
@@ -22,6 +22,26 @@ def get_current_user(request):
         return Response(serializer.data)
     else:
         return Response({'error': 'User not authenticated'})
+
+
+class UserView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = PersonalUserSerializer
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return User.objects.filter(pk=user.pk)
+
+    def get_object(self):
+        return self.request.user
+
+    def perform_update(self, serializer):
+        password = self.request.data.get('password', None)
+        if password:
+            serializer.validated_data['password'] = make_password(password)
+        serializer.save()
 
 
 class LoginView(APIView):
@@ -45,7 +65,34 @@ class LogoutView(APIView):
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = RegisterSerializer
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = ChangePasswordSerializer
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, *args, **kwargs):
+        user = self.request.user
+        password = request.data.get('password')
+        new_password = request.data.get('new_password')
+        confirm_new_password = request.data.get('confirm_new_password')
+
+        if not user.check_password(password):
+            return Response({'message': 'Incorrect password'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if new_password != confirm_new_password:
+            return Response({'message': 'New passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)
 
 
 class IsGroupMember(permissions.BasePermission):

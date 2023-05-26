@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import Task, Group, List
+from django.contrib.auth.hashers import make_password
 
 User = get_user_model()
 
@@ -40,7 +41,49 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username','password', 'password_confirm')
+        fields = ('id', 'email', 'username', 'password', 'password_confirm')
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+    password_confirm = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError("Passwords do not match")
+        return attrs
+
+    def create(self, validated_data):
+
+        email = validated_data['email']
+        username = email.split('@')[0]
+
+        user = User.objects.create_user(
+            email=email,
+            password=validated_data['password'],
+            username=username,
+        )
+        return user
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'password', 'password_confirm')
+
+
+class PersonalUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'username',
+                  'name', 'phone', 'company', 'college')
+
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    new_password = serializers.CharField(write_only=True)
+    confirm_new_password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'password', 'new_password', 'confirm_new_password')
 
 
 class TaskSerializer(serializers.ModelSerializer):
