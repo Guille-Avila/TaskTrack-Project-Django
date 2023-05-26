@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import LoginView, RegisterView, TaskViewSet, LogoutView, GroupViewSet, ListViewSet, MemberViewSet, get_current_user, UserView, ChangePasswordView
+from .views import LoginView, RegisterView, TaskViewSet, LogoutView, GroupViewSet, ListViewSet, MemberViewSet, get_current_user, UserView, ChangePasswordView, CheckLoginView
 from rest_framework.authtoken.views import obtain_auth_token
 
 router = DefaultRouter()
@@ -22,4 +22,5 @@ urlpatterns = [
          MemberViewSet.as_view({'put': 'update'}), name='member-update'),
     path('current-user/', get_current_user, name='current-user'),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
+    path('check-login/', CheckLoginView.as_view(), name='check_login'),
 ] + router.urls
