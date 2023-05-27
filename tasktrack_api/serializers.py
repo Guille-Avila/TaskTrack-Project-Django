@@ -2,7 +2,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import Task, Group, List
-from django.contrib.auth.hashers import make_password
 
 User = get_user_model()
 
@@ -47,23 +46,7 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     password_confirm = serializers.CharField(write_only=True)
-
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password_confirm']:
-            raise serializers.ValidationError("Passwords do not match")
-        return attrs
-
-    def create(self, validated_data):
-
-        email = validated_data['email']
-        username = email.split('@')[0]
-
-        user = User.objects.create_user(
-            email=email,
-            password=validated_data['password'],
-            username=username,
-        )
-        return user
+    email = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
@@ -110,3 +93,21 @@ class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group.users.through
         fields = ('id', 'group_id', 'user_id')
+
+
+# code to reset the password --------------------------------
+
+class EmailPasswordResetSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
+
+    class Meta:
+        fields = ['email']
+        model = User
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True, min_length=1)
+    password_confirm = serializers.CharField(write_only=True)
+
+    class Meta:
+        fields = ("password", "password_confirm")

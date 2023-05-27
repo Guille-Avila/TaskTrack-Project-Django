@@ -1,14 +1,20 @@
-from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from rest_framework import status, generics, viewsets, permissions, authentication
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import LoginSerializer, UserSerializer, TaskSerializer, GroupSerializer, ListSerializer, MemberSerializer, PersonalUserSerializer, RegisterSerializer, ChangePasswordSerializer
+from .serializers import LoginSerializer, UserSerializer, TaskSerializer, GroupSerializer, ListSerializer, MemberSerializer, PersonalUserSerializer, RegisterSerializer, ChangePasswordSerializer, EmailPasswordResetSerializer, ResetPasswordSerializer
 from django.contrib.auth import get_user_model
 from .models import Task, Group, List
 from rest_framework.decorators import api_view
 from django.contrib.auth.hashers import make_password
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
+from django.utils.http import urlsafe_base64_decode
+
 
 User = get_user_model()
 
@@ -74,6 +80,28 @@ class CheckLoginView(APIView):
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        username = email.split('@')[0]
+
+        password = serializer.validated_data['password']
+        password_confirm = serializer.validated_data['password_confirm']
+
+        if password != password_confirm:
+            return Response({'message': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.create_user(
+            email=email,
+            password=password,
+            username=username,
+        )
+
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key}, status=status.HTTP_201_CREATED)
 
 
 class ChangePasswordView(generics.UpdateAPIView):
@@ -253,3 +281,91 @@ class MemberViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_200_OK)
         else:
             return Response({'message': 'Failed to update member'}, status=status.HTTP_400_BAD_REQUEST)
+
+# views to Reset Password sending an Email
+
+
+class EmailPasswordResetView(generics.GenericAPIView):
+    serializer_class = EmailPasswordResetSerializer
+
+    def post(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.data["email"]
+        user = User.objects.filter(email=email).first()
+
+        if user:
+            encoded_pk = urlsafe_base64_encode(force_bytes(user.pk))
+            token = PasswordResetTokenGenerator().make_token(user)
+
+            reset_link = f"http://localhost:3000/restart-password/?pk={encoded_pk}&token={token}"
+
+            html_message = f"<h5>Info</h5><h2>TaskTrack</h2><p>You have requested to reset your password. If you have not done so, ignore this message.</p><a href='{reset_link}'>Click to reset you Password</a><p><i>Cordially the TaskTrack team</i></p>"
+
+            email = EmailMultiAlternatives(
+                'Reset password TaskTrack',
+                html_message,
+                settings.EMAIL_HOST_USER,
+                [email]
+            )
+
+            email.content_subtype = "html"
+            email.send()
+
+            return Response(
+                {"message": f"Your password rest link: {reset_link}"},
+                status=status.HTTP_200_OK,
+            )
+
+        else:
+            return Response(
+                {"message": "User doesn't exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class ResetPasswordview(generics.GenericAPIView):
+    serializer_class = ResetPasswordSerializer
+
+    def patch(self, request, *args, **kwargs):
+        password = request.data.get("password")
+        password_confirm = request.data.get("password_confirm")
+
+        if password != password_confirm:
+            return Response(
+                {"message": "Passwords do not match"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        token = kwargs.get("token")
+        encoded_pk = kwargs.get("encoded_pk")
+
+        if token is None or encoded_pk is None:
+            return Response(
+                {"message": "Missing data."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        pk = urlsafe_base64_decode(encoded_pk).decode()
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(
+                {"message": "User does not exist."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not PasswordResetTokenGenerator().check_token(user, token):
+            return Response(
+                {"message": "The reset token is invalid"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.set_password(password)
+        user.save()
+
+        return Response(
+            {"message": "Password reset complete"},
+            status=status.HTTP_200_OK
+        )
