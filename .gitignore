@@ -1,5 +1,6 @@
 .env
 env/
+.vscode/
 # paraIgnorar
 # **/adentro  ignore subfolder
 # /.vscode ignore folder
