@@ -30,10 +30,7 @@ DEBUG = False
 
 # General domain to host app
 ALLOWED_HOSTS = [
-    'tasktrack-project-django-production.up.railway.app', 'localhost']
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://tasktrack-project-django-production.up.railway.app"]
+    '*']
 
 # Application definition
 
@@ -54,7 +51,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     # import white noise
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    # "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
