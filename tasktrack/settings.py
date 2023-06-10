@@ -28,7 +28,8 @@ SECRET_KEY = "django-insecure-dbkjw-5j-1l1m$eudlasgv@y2o@wt_!ugii1sgup5yu&xwe)nl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', 'tasktrack-project-django-production.up.railway.app']
+ALLOWED_HOSTS = ['localhost',
+                 'tasktrack-project-django-production.up.railway.app']
 
 # Application definition
 
@@ -134,7 +135,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'C:/Users/Owner/OneDrive/Escritorio/projects/tasktrack/tasktrack-back/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
