@@ -202,6 +202,8 @@ class ListViewSet(viewsets.ModelViewSet):
 
 class MemberViewSet(viewsets.ModelViewSet):
     serializer_class = MemberSerializer
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         group_id = self.kwargs.get('id')
