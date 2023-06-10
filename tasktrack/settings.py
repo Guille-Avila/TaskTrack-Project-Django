@@ -29,7 +29,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = False
 
 # General domain to host app
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'tasktrack-project-django-production.up.railway.app', 'localhost']
 
 CSRF_TRUSTED_ORIGINS = [
     "https://tasktrack-project-django-production.up.railway.app"]
