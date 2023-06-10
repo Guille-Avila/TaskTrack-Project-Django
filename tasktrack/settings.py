@@ -32,6 +32,8 @@ DEBUG = False
 ALLOWED_HOSTS = ['localhost',
                  'tasktrack-project-django-production.up.railway.app']
 
+CSRF_TRUSTED_ORIGINS=["https://tasktrack-project-django-production.up.railway.app"]
+
 # Application definition
 
 INSTALLED_APPS = [
