@@ -1,1 +1,1 @@
-web: gunicorn tasktrack.wsgi --log-file -
+web: gunicorn 'tasktrack.wsgi'
