@@ -53,16 +53,8 @@ INSTALLED_APPS = [
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
-    "https://magenta-marzipan-7ec353.netlify.app",
+    "",
     "https://tasktrack-project-django-production.up.railway.app"
-]
-CORS_ALLOW_METHODS = [
-    "GET",
-    "POST",
-    "PUT",
-    "DELETE",
-    "PATCH",
-    "OPTION"
 ]
 
 MIDDLEWARE = [
