@@ -269,13 +269,7 @@ class MemberViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_200_OK)
         else:
             return Response({'message': 'Failed to update member'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class MemberDestroyView(DestroyAPIView):
-    queryset = Group.objects.all()
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
-
+        
     def destroy(self, request, *args, **kwargs):
         group_id = self.kwargs.get('group_id')
         user_id = self.kwargs.get('user_id')
@@ -291,6 +285,7 @@ class MemberDestroyView(DestroyAPIView):
         except group.users.through.DoesNotExist:
             return Response({'message': 'Failed to delete member'},
                             status=status.HTTP_400_BAD_REQUEST)
+
 
 # views to Reset Password sending an Email
 

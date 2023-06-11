@@ -51,7 +51,7 @@ INSTALLED_APPS = [
 
 # available request links cors
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000",
-                        "https://tasktrack-project-django-production.up.railway.app/"]
+                        "https://tasktrack-project-django-production.up.railway.app"]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
