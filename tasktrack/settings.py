@@ -51,9 +51,18 @@ INSTALLED_APPS = [
 ]
 
 # available request links cors
+CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "https://magenta-marzipan-7ec353.netlify.app"
+]
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "OPTION"
 ]
 
 MIDDLEWARE = [
