@@ -63,11 +63,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "takstrack.middleware.CorsMiddleware"
 ]
 
 # available request links cors
 CORS_ORIGIN_WHITELIST = ['http://localhost:3000']
-CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000',
+                        'https://tasktrack-project-django-production.up.railway.app',]
 CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = "tasktrack.urls"
