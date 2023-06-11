@@ -28,8 +28,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = False
 
 # General domain to host app
-ALLOWED_HOSTS = [
-    '*']
+ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
     "https://tasktrack-project-django-production.up.railway.app"]
@@ -51,12 +50,12 @@ INSTALLED_APPS = [
 ]
 
 # available request links cors
-CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-# CORS_ORIGIN_WHITELIST = [
-#     "http://localhost:3000",
-#     "https://magenta-marzipan-7ec353.netlify.app"
-# ]
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+    "https://magenta-marzipan-7ec353.netlify.app",
+    "https://tasktrack-project-django-production.up.railway.app"
+]
 CORS_ALLOW_METHODS = [
     "GET",
     "POST",
@@ -100,7 +99,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "tasktrack.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -114,7 +112,6 @@ DATABASES = {
         "PORT": os.getenv("DATABASE_PORT"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -134,7 +131,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -145,7 +141,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -164,7 +159,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Set user to access with email
 AUTH_USER_MODEL = 'tasktrack_api.User'
 
-
 # config rest framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -179,12 +173,3 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-
-# Security
-# SECURE_HSTS_SECONDS = 31536000
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
-
-# SECURE_SSL_REDIRECT = True
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
