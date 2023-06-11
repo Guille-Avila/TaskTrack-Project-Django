@@ -31,7 +31,7 @@ DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://tasktrack-project-django-production.up.railway.app"]
+    "https://tasktrack-project-django-production.up.railway.app", "http://localhost:3000"]
 
 # Application definition
 
@@ -50,20 +50,15 @@ INSTALLED_APPS = [
 ]
 
 # available request links cors
-CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000",
-    "",
-    "https://tasktrack-project-django-production.up.railway.app"
-]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     # import corsheaders
     "corsheaders.middleware.CorsMiddleware",
     # import white noise
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

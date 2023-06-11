@@ -286,25 +286,11 @@ class MemberDestroyView(DestroyAPIView):
             member = group.users.through.objects.get(
                 group_id=group_id, user_id=user_id)
             member.delete()
-            response_data = {
-                'message': 'Member {} has been removed from group {}'.format(user_id, group_id)
-            }
-            return Response(response_data, status=status.HTTP_204_NO_CONTENT, headers={
-                'Access-Control-Allow-Origin': 'http://localhost:3000',
-                'Access-Control-Allow-Methods': 'DELETE',
-                'Access-Control-Allow-Headers': 'Authorization',
-                'Access-Control-Allow-Credentials': 'true'
-            })
+            return Response({'message': 'Member {} has been removed from group {}'.format(user_id, group_id)},
+                            status=status.HTTP_204_NO_CONTENT)
         except group.users.through.DoesNotExist:
-            response_data = {
-                'message': 'Failed to delete member'
-            }
-            return Response(response_data, status=status.HTTP_400_BAD_REQUEST, headers={
-                'Access-Control-Allow-Origin': 'http://localhost:3000',
-                'Access-Control-Allow-Methods': 'DELETE',
-                'Access-Control-Allow-Headers': 'Authorization',
-                'Access-Control-Allow-Credentials': 'true'
-            })
+            return Response({'message': 'Failed to delete member'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 # views to Reset Password sending an Email
 
