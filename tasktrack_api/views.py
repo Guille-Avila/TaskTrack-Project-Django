@@ -14,6 +14,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.utils.http import urlsafe_base64_decode
+from rest_framework.generics import DestroyAPIView
 
 
 User = get_user_model()
@@ -240,21 +241,6 @@ class MemberViewSet(viewsets.ModelViewSet):
             return Response({'message': 'Failed to add new member'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, *args, **kwargs):
-        group_id = self.kwargs.get('id')
-        user_id = request.data.get('user_id')
-
-        group = get_object_or_404(Group, id=group_id)
-        try:
-            member = group.users.through.objects.get(
-                group_id=group_id, user_id=user_id)
-            member.delete()
-            return Response({'message': 'Member {} has been removed from group {}'.format(user_id, group_id)},
-                            status=status.HTTP_204_NO_CONTENT)
-        except group.users.through.DoesNotExist:
-            raise Response({'message': 'Failed to delete member'},
-                           status=status.HTTP_400_BAD_REQUEST)
-
     def update(self, request, *args, **kwargs):
         group_id = self.kwargs.get('group_id')
         user_id = self.kwargs.get('user_id')
@@ -283,6 +269,25 @@ class MemberViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_200_OK)
         else:
             return Response({'message': 'Failed to update member'}, status=status.HTTP_400_BAD_REQUEST)
+        
+class MemberDestroyView(DestroyAPIView):
+    queryset = Group.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        group_id = self.kwargs.get('group_id')
+        user_id = self.kwargs.get('user_id')
+
+        group = get_object_or_404(Group, id=group_id)
+
+        try:
+            member = group.users.through.objects.get(
+                group_id=group_id, user_id=user_id)
+            member.delete()
+            return Response({'message': 'Member {} has been removed from group {}'.format(user_id, group_id)},
+                            status=status.HTTP_204_NO_CONTENT)
+        except group.users.through.DoesNotExist:
+            return Response({'message': 'Failed to delete member'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 # views to Reset Password sending an Email
 
