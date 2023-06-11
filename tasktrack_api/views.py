@@ -276,12 +276,6 @@ class MemberDestroyView(DestroyAPIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def finalize_response(self, request, response, *args, **kwargs):
-        response = super().finalize_response(request, response, *args, **kwargs)
-        # Reemplaza con tu origen adecuado
-        response["Access-Control-Allow-Origin"] = "http://localhost:3000"
-        return response
-
     def destroy(self, request, *args, **kwargs):
         group_id = self.kwargs.get('group_id')
         user_id = self.kwargs.get('user_id')
