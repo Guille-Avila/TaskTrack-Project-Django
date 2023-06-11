@@ -33,7 +33,8 @@ ALLOWED_HOSTS = [
     '*']
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://tasktrack-project-django-production.up.railway.app"]
+    "https://tasktrack-project-django-production.up.railway.app",
+    'http://localhost:3000']
 
 # Application definition
 
@@ -68,7 +69,8 @@ MIDDLEWARE = [
 
 # available request links cors
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',  # react port
+    'http://localhost:3000',
+    'https://tasktrack-project-django-production.up.railway.app/'  # react port
 ]
 
 ROOT_URLCONF = "tasktrack.urls"
